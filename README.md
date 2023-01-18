@@ -1,8 +1,8 @@
 # Nextflow Pipeline for 10x MultiOme processing with measurement of heteroplasmy using mgatk
 
-<IMG align="right" SRC="Figures/nf_logo.png" width=300px><br>
+<IMG align="center" SRC="Figures/CR10x.png" width=50px><br> <IMG align="right" SRC="Figures/nf_logo.png" width=300px><br>
 
-<IMG align="right" SRC="Figures/CR10x.png" width=50px><br>
+
 
 ## Author: Malwina Prater   
 
