@@ -73,10 +73,10 @@ fastq --|---rna ---|--Sample2_S1_L001_I1_001.fastq.gz
 
 
 
-4. Create nextflow config file using template  `nextflow.config`, and modify directories and paths to genomes and software.
+4. Create nextflow config file using template [nextflow.config](nextflow.config), and modify directories and paths to genomes and software.
 
 
-5. Create config file for MultiQC `multiqc_config.yaml`, and modify project details, so it presents clearly experiment, project and collaborators.
+5. Create config file for MultiQC [multiqc_config.yaml](multiqc_config.yaml), and modify project details, so it presents clearly experiment, project and collaborators.
 
 example config file:
 
