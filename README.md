@@ -49,9 +49,9 @@ This is already done for Mouse genome in directories (also unmasked genome for H
 
 For NUMTs masking of the genome `mm10.full.backlist.bed` was downloaded from `https://github.com/caleblareau/mgatk/wiki/Increasing-coverage-from-10x-processing`.
 
-Mask genome using script: `mask_NUMTs_genome.sh`.
+Mask genome using script: [mask_NUMTs_genome.sh](Scripts/mask_NUMTs_genome.sh).
 
-Once the masked fasta is ready, use script `CR_mkref.sh` to make new CellRanger-arc genome. The config file was required to proceed with making new genome.
+Once the masked fasta is ready, use script [CR_mkref.sh](Scripts/CR_mkref.sh) to make new CellRanger-arc genome. The config file was required to proceed with making new genome.
 
 
 
@@ -111,7 +111,7 @@ custom_logo_title: 'MRC Mitochondrial Biology Unit, University of Cambridge'
 ### How to run the multiome nextflow pipeline
 
 
-6. Run nextflow on MBU cluster:
+Run nextflow on MBU cluster:
 
 change directory to project dir, where fastq files are stored (or linked).
 
