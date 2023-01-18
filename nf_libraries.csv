@@ -1,0 +1,5 @@
+Sample_ID,Sample_Project,Sample_Species,Sample_Lib,Sample_Pair
+Sample2,MBU_jv361_001,mouse,rna,1
+Sample2,MBU_jv361_001,mouse,atac,1
+Sample1,MBU_jv361_001,mouse,rna,1
+Sample1,MBU_jv361_001,mouse,atac,1

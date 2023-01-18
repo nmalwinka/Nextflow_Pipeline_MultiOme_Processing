@@ -1,0 +1,26 @@
+report_header_info:
+    - Analysis by:: 'Malwina Prater'
+    - Contact E-mail:: 'mn367@mrc-mbu.cam.ac.uk'
+    - Application Type:: 'scRNA-seq + scATAC-seq'
+    - Project Type:: '10x multiOme'
+    - Project Owners:: 'Stephen Burr & Jelle Van Den Ameele'
+    - Sequencing Platform:: 'Illumina '
+    - Sequencing Setup:: 'standard'
+
+title: "Project ID ::: MBU_jv361_001"
+subtitle: "Mitochondrial biology Unit, MRC, University of Cambridge"
+intro_text: "Pipeline created by Malwina Prater, MBU Bioinformatics"
+
+#output_fn_name: MBU_jv361_001.multiqc_report.html
+#data_dir_name: MBU_jv361_001.multiqc_data
+
+fn_ignore_files:
+    - '*lostreads*'
+
+custom_logo: '/suffolk/WorkGenomicsE/mn367/Logo/LOGO_MRC_MBU_Cambridge_RGB.png'
+custom_logo_url: 'http://www.mrc-mbu.cam.ac.uk/'
+custom_logo_title: 'MRC Mitochondrial Biology Unit, University of Cambridge'
+
+
+
+
