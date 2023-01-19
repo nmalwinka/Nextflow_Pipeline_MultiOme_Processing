@@ -1,6 +1,0 @@
-Sample	FastQC_mqc-generalstats-fastqc-percent_duplicates	FastQC_mqc-generalstats-fastqc-percent_gc	FastQC_mqc-generalstats-fastqc-avg_sequence_length	FastQC_mqc-generalstats-fastqc-percent_fails	FastQC_mqc-generalstats-fastqc-total_sequences	QualiMap_mqc-generalstats-qualimap-5_3_bias	QualiMap_mqc-generalstats-qualimap-reads_aligned
-Sample1_S1_L001_I1_001	99.99999579769508	69.0	10.0	36.36363636363637	475929290.0		
-Sample1_S1_L001_I2_001	99.9999949572341	60.0	10.0	36.36363636363637	475929290.0		
-Sample1_S1_L001_R1_001	36.837536456201626	45.0	28.0	0.0	475929290.0		
-Sample1_S1_L001_R2_001	75.89326441827517	47.0	90.0	9.090909090909092	475929290.0		
-gex_possorted_bam						1.01	446985467.0

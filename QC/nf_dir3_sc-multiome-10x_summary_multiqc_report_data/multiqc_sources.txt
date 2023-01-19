@@ -1,7 +1,0 @@
-Module	Section	Sample Name	Source
-QualiMap	rna_genome_results	gex_possorted_bam	/suffolk/WorkGenomicsH/mn367/Projects/MBU_Jelle/MBU_jv361_001/nf_dir3/qc/qualimap/rnaseq_qc_results.txt
-QualiMap	rna_coverage_histogram	qualimap	/suffolk/WorkGenomicsH/mn367/Projects/MBU_Jelle/MBU_jv361_001/nf_dir3/qc/qualimap/raw_data_qualimapReport/coverage_profile_along_genes_(total).txt
-FastQC	all_sections	Sample1_S1_L001_I1_001	/suffolk/WorkGenomicsH/mn367/Projects/MBU_Jelle/MBU_jv361_001/nf_dir3/qc/fastqc/rna/Sample1_S1_L001_I1_001_fastqc.zip
-FastQC	all_sections	Sample1_S1_L001_R2_001	/suffolk/WorkGenomicsH/mn367/Projects/MBU_Jelle/MBU_jv361_001/nf_dir3/qc/fastqc/rna/Sample1_S1_L001_R2_001_fastqc.zip
-FastQC	all_sections	Sample1_S1_L001_R1_001	/suffolk/WorkGenomicsH/mn367/Projects/MBU_Jelle/MBU_jv361_001/nf_dir3/qc/fastqc/rna/Sample1_S1_L001_R1_001_fastqc.zip
-FastQC	all_sections	Sample1_S1_L001_I2_001	/suffolk/WorkGenomicsH/mn367/Projects/MBU_Jelle/MBU_jv361_001/nf_dir3/qc/fastqc/rna/Sample1_S1_L001_I2_001_fastqc.zip
