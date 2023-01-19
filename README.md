@@ -63,11 +63,11 @@ Once the masked fasta is ready, use script [CR_mkref.sh](Scripts/CR_mkref.sh) to
 
 ````
 fastq --|---rna ---|--Sample2_S1_L001_I1_001.fastq.gz
-		|		   |--Sample2_S1_L001_I2_001.fastq.gz
-		|		   |--Sample2_S1_L001_R1_001.fastq.gz
-		|		   |--Sample2_S1_L001_R2_001.fastq.gz
-		|
-		|---atac---|--Sample2_S1_L001_I1_001.fastq.gz
+        |		   |--Sample2_S1_L001_I2_001.fastq.gz
+        |		   |--Sample2_S1_L001_R1_001.fastq.gz
+        |		   |--Sample2_S1_L001_R2_001.fastq.gz
+        |
+        |---atac---|--Sample2_S1_L001_I1_001.fastq.gz
 				   |--Sample2_S1_L001_R1_001.fastq.gz
 				   |--Sample2_S1_L001_R2_001.fastq.gz
 				   |--Sample2_S1_L001_R3_001.fastq.gz
