@@ -1,6 +1,6 @@
-# Nextflow Pipeline for 10x MultiOme processing with measurement of heteroplasmy using mgatk 
+# Nextflow Pipeline for 10x MultiOme processing with measurement of heteroplasmy using mgatk
 
-<IMG align="center" SRC="Figures/CR10x.png" width=50px><br> 
+<IMG align="center" SRC="Figures/CR10x.png" width=50px><br>
 <IMG align="right" SRC="Figures/nf_logo.png" width=300px><br>
 
 
@@ -25,7 +25,7 @@ Nextflow pipeline for processing 10x MultiOme datasets with CellRanger-arc and m
 ## Processing
 
 
-### Input files 
+### Input files
 
 1. Sample table written in `.csv`
 
@@ -136,16 +136,4 @@ NXF_VER=21.10.6 nextflow run nf_pipeline_multiome.nf -config nextflow.config -re
 ## Pipeline structure:
 
 
-<IMG SRC="Figures/flowchart.png" width=1000px><br>
-
-
-
-
-
-
-
-
-
-
-
-
+<IMG SRC="Figures/DAG_flowchart.png" width=1000px><br>
