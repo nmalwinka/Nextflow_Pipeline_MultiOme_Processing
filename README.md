@@ -68,9 +68,9 @@ fastq --|---rna ---|--Sample2_S1_L001_I1_001.fastq.gz
         |		   |--Sample2_S1_L001_R2_001.fastq.gz
         |
         |---atac---|--Sample2_S1_L001_I1_001.fastq.gz
-				   |--Sample2_S1_L001_R1_001.fastq.gz
-				   |--Sample2_S1_L001_R2_001.fastq.gz
-				   |--Sample2_S1_L001_R3_001.fastq.gz
+                   |--Sample2_S1_L001_R1_001.fastq.gz
+                   |--Sample2_S1_L001_R2_001.fastq.gz
+                   |--Sample2_S1_L001_R3_001.fastq.gz
 ````
 
 
