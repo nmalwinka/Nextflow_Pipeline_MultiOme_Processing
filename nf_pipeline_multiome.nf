@@ -60,23 +60,8 @@ Channel
     .tap{infoall}
     .into { crlib_ch; cragg_ch; fqc_ch; qualimap_rna_ch }
 
-// RNA Projects
-//Channel
-//    .fromPath(sheet)
-//    .splitCsv(header:true)
-//    .map { row -> row.Sample_Project }
-//    .unique()
-//    .tap{infoProject}
-//    .set { count_summarize  }
-
 println " > Samples to process: "
 println "[Sample_ID,Sample_Project,Sample_Species,Sample_Lib,pair]"
-//infoall.subscribe { println "Info: $it" }
-
-println " > RNA Projects to process : "
-println "[Sample_Project]"
-//infoProject.subscribe { println "Info Projects: $it" }
-
 
 
 
@@ -100,14 +85,17 @@ process gen_libraries_csv {
 	"""
 mkdir -p $metadir
 libcsv=$metadir/${projid}_${sid}_libraries.csv
+
 # Print header
 echo 'fastqs,sample,library_type' > \$libcsv
+
 # Print RNA entry
 echo '${fqdir}/rna,$sid,Gene Expression' >> \$libcsv
+
 # Get paired ATAC sample
 atacid=\$(grep ',atac,$pair' $sheet | cut -f2 -d ',')
 echo "${fqdir}/atac,$sid,Chromatin Accessibility" >> \$libcsv
-        
+
 mkdir -p ${aggdir}
 aggcsv=${aggdir}/${projid}_libraries.csv
 echo \$aggcsv
@@ -132,14 +120,13 @@ process count {
 
 	output:
 	path '*'
-	//file "${sid}/outs/" into samplename
 	file "${sid}/outs/filtered_feature_bc_matrix/barcodes.tsv" into barcodes_ch
 	val "${qcdir}/cellranger/${sid}.summary.csv" into count_metrics
 	val "${aggdir}/${sid}.molecule_info.h5" into count_agg
 	val sid into mgatk_samplename_ch
         file "${sid}/outs/gex_possorted_bam.bam" into qualimap_rna_go
         //file "${sid}/outs/atac_possorted_bam.bam" into qualimap_atac_go
-	file "${sid}/outs/atac_possorted_bam.bam" into atac_bam_ch	
+	file "${sid}/outs/atac_possorted_bam.bam" into atac_bam_ch
 
 	when:
 	lib == 'rna'
@@ -177,15 +164,20 @@ libcsv=$metadir/${projid}_${sid}_libraries.csv
 
 
 ## Copy files for aggregation
+
 # h5 file
 mkdir -p $aggdir
 cp ${sid}/outs/gex_molecule_info.h5 ${aggdir}/${sid}.gex_molecule_info.h5
+
 # Atac fragments
 cp ${sid}/outs/atac_fragments.tsv.gz ${aggdir}/${sid}.atac_fragments.tsv.gz
 cp ${sid}/outs/atac_fragments.tsv.gz.tbi ${aggdir}/${sid}.atac_fragments.tsv.gz.tbi
+
 # Per Barcode metrics
 cp ${sid}/outs/per_barcode_metrics.csv ${aggdir}/${sid}.per_barcode_metrics.csv
+
 ## Copy metrics file for qc
+
 # Remove if it exists
 if [ -f ${qcdir}/cellranger/${sid}.summary.csv ]; then
 	rm -r ${qcdir}/cellranger/${sid}.summary.csv
@@ -196,10 +188,8 @@ cp ${sid}/outs/summary.csv ${qcdir}/cellranger/${sid}.summary.csv
 
 ## Copy to delivery folder
 mkdir -p ${outdir}/summaries
-#mkdir -p ${outdir}/summaries/cloupe
 mkdir -p ${outdir}/summaries/web-summaries
 cp ${sid}/outs/web_summary.html ${outdir}/summaries/web-summaries/${sid}.web_summary.html
-#cp ${sid}/outs/cloupe.cloupe ${outdir}/summaries/cloupe/${sid}_cloupe.cloupe
 
 gunzip -c ${sid}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz > ${sid}/outs/filtered_feature_bc_matrix/barcodes.tsv
 	"""
@@ -217,17 +207,12 @@ process summarize_count {
 	val metrics from count_metrics.collect()
 
 	output:
-	//val "y" into mqc_count
 	val "x" into run_summarize
 
 	"""
 cd $outdir
 mkdir -p ${qcdir}
 mkdir -p ${qcdir}/cellranger
-# RNA (GEX) summaries
-#python $basedir/bin/ctg-sc-arc-gex-count-metrics-concat.py -i ${outdir} -o ${qcdir}/cellranger
-# ATAC summaries
-#python $basedir/bin/ctg-sc-arc-atac-count-metrics-concat.py -i ${outdir} -o ${qcdir}/cellranger
 	"""
 }
 
@@ -261,10 +246,7 @@ else
 fi
 
 
-
 mkdir -p  ${qcdir}/qualimap
-
-#module --ignore-cache load qualimap
 
 /usr/mbu/software/qualimap/qualimap-2.2.1/qualimap rnaseq -gtf \$GTF -bam $RNA_BAM -s -outdir ${qcdir}/qualimap --java-mem-size=50G
 
@@ -350,17 +332,13 @@ process aggregate {
 
 	publishDir "${outdir}/aggregate/", mode: 'move', overwrite: true
 	tag "$projid"
-  
+
 	input:
 	set projid, ref from craggregate.unique()
 	val moleculeinfo from count_agg.collect()
 
-	//output:
-	//file "${projid}_agg/outs" into doneagg
-	
 	when:
 	run_aggregate="y"
-
 
 	"""
 if [ $ref == "Human" ] || [ $ref == "human" ]
@@ -387,15 +365,16 @@ fi
    --csv=${aggdir}/${projid}_libraries.csv \
    --normalize=depth \
    --reference=\$genome
-## Copy to delivery folder 
+
+## Copy to delivery folder
 cp ${projid}_agg/outs/web_summary.html ${outdir}/summaries/web-summaries/${projid}_agg.web_summary.html
 #mv ${projid}_agg/outs/cloupe.cloupe ${outdir}/summaries/cloupe/${projid}_agg_cloupe.cloupe
 
-## Remove the gex_molecule_info.h5 files that are stored in the aggregate folder (the original files are still in count-cr/../outs 
+## Remove the gex_molecule_info.h5 files that are stored in the aggregate folder (the original files are still in count-cr/../outs
 rm ${aggdir}/*h5
-## Remove the barcode_metrics.csv files that are stored in the aggregate folder (the original files are still in count-cr/../outs 
+## Remove the barcode_metrics.csv files that are stored in the aggregate folder (the original files are still in count-cr/../outs
 rm ${aggdir}/*barcode_metrics.csv
-## Remove the atac_fragments.csv files that are stored in the aggregate folder (the original files are still in count-cr/../outs 
+## Remove the atac_fragments.csv files that are stored in the aggregate folder (the original files are still in count-cr/../outs
 rm ${aggdir}/*atac_fragments.tsv.gz*
 	"""
 
@@ -423,8 +402,6 @@ source activate mgatk
 mkdir -p ${basedir}/mgatk
 mkdir -p ${basedir}/mgatk/${samplename}
 
-#gunzip -c ${outdir}/count/${samplename}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz > ${outdir}/count/${samplename}/outs/filtered_feature_bc_matrix/barcodes.tsv
-#gunzip ${outdir}/count/${samplename}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz
 mgatk tenx  -bt CB -c 12 -ub UB  -i ${atac_bam} -o ${basedir}/mgatk/${samplename} -b ${barcode} --mito-genome mm10
 
 	"""
@@ -471,11 +448,6 @@ process multiqc_count_run {
 	val x from run_summarize.collect()
 	val projid from mqc_ch
 	val y from qualimap_rna_done
-	//val z from mqc_count
-	//val z from qualimap_atac_done
-
-	//output:
-        //val y into count_mat_ch
 
 	"""
 
@@ -487,13 +459,3 @@ echo "multiqc done"
 
 	"""
 }
-
-
-
-
-
-
-
-
-
-
