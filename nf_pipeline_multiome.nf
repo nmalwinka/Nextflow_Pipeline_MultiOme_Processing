@@ -58,24 +58,24 @@ Channel
     .splitCsv(header:true)
     .map { row -> tuple( row.Sample_ID, row.Sample_Project, row.Sample_Species, row.Sample_Lib, row.Sample_Pair ) }
     .tap{infoall}
-    .into { crlib_ch; cragg_ch; fqc_ch; mgatk_ch; qualimap_atac_ch; qualimap_rna_ch }
+    .into { crlib_ch; cragg_ch; fqc_ch; qualimap_rna_ch }
 
 // RNA Projects
-Channel
-    .fromPath(sheet)
-    .splitCsv(header:true)
-    .map { row -> row.Sample_Project }
-    .unique()
-    .tap{infoProject}
-    .set { count_summarize  }
+//Channel
+//    .fromPath(sheet)
+//    .splitCsv(header:true)
+//    .map { row -> row.Sample_Project }
+//    .unique()
+//    .tap{infoProject}
+//    .set { count_summarize  }
 
 println " > Samples to process: "
 println "[Sample_ID,Sample_Project,Sample_Species,Sample_Lib,pair]"
-infoall.subscribe { println "Info: $it" }
+//infoall.subscribe { println "Info: $it" }
 
 println " > RNA Projects to process : "
 println "[Sample_Project]"
-infoProject.subscribe { println "Info Projects: $it" }
+//infoProject.subscribe { println "Info Projects: $it" }
 
 
 
@@ -107,7 +107,14 @@ echo '${fqdir}/rna,$sid,Gene Expression' >> \$libcsv
 # Get paired ATAC sample
 atacid=\$(grep ',atac,$pair' $sheet | cut -f2 -d ',')
 echo "${fqdir}/atac,$sid,Chromatin Accessibility" >> \$libcsv
-        """
+        
+mkdir -p ${aggdir}
+aggcsv=${aggdir}/${projid}_libraries.csv
+echo \$aggcsv
+echo "library_id,atac_fragments,per_barcode_metrics,gex_molecule_info" > \$aggcsv
+
+  	"""
+
 }
 
 
@@ -125,13 +132,13 @@ process count {
 
 	output:
 	path '*'
-	file "${sid}/outs/" into samplename
+	//file "${sid}/outs/" into samplename
 	file "${sid}/outs/filtered_feature_bc_matrix/barcodes.tsv" into barcodes_ch
 	val "${qcdir}/cellranger/${sid}.summary.csv" into count_metrics
 	val "${aggdir}/${sid}.molecule_info.h5" into count_agg
-	val sid into mgatk_go
+	val sid into mgatk_samplename_ch
         file "${sid}/outs/gex_possorted_bam.bam" into qualimap_rna_go
-        file "${sid}/outs/atac_possorted_bam.bam" into qualimap_atac_go
+        //file "${sid}/outs/atac_possorted_bam.bam" into qualimap_atac_go
 	file "${sid}/outs/atac_possorted_bam.bam" into atac_bam_ch	
 
 	when:
@@ -210,7 +217,7 @@ process summarize_count {
 	val metrics from count_metrics.collect()
 
 	output:
-	val "y" into mqc_count
+	//val "y" into mqc_count
 	val "x" into run_summarize
 
 	"""
@@ -327,21 +334,12 @@ process gen_aggCSV {
 	run_aggregate="y"
 
 	"""
-mkdir -p ${aggdir}
-aggcsv=${aggdir}/${projid}_libraries.csv
 
-if [ -f \${aggcsv} ]
-then
-	if grep -q $sid \$aggcsv
-	then
-		echo ""
-	else
-		echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,${aggdir}/${sid}.per_barcode_metrics.csv,${aggdir}/${sid}.gex_molecule_info.h5" >> \$aggcsv
-	fi
-else
-	echo "library_id,atac_fragments,per_barcode_metrics,gex_molecule_info" > \$aggcsv
-	echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,${aggdir}/${sid}.per_barcode_metrics.csv,${aggdir}/${sid}.gex_molecule_info.h5" >> \$aggcsv
-fi
+
+aggcsv=${aggdir}/${projid}_libraries.csv
+echo \$aggcsv
+echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,${aggdir}/${sid}.per_barcode_metrics.csv,${aggdir}/${sid}.gex_molecule_info.h5" >> \$aggcsv
+
 	"""
 }
 
@@ -357,9 +355,8 @@ process aggregate {
 	set projid, ref from craggregate.unique()
 	val moleculeinfo from count_agg.collect()
 
-	output:
-	file "${projid}_agg/outs" into doneagg
-	val projid into md5_agg_go
+	//output:
+	//file "${projid}_agg/outs" into doneagg
 	
 	when:
 	run_aggregate="y"
@@ -413,7 +410,7 @@ rm ${aggdir}/*atac_fragments.tsv.gz*
 process mgatk {
 
 	input:
-	val samplename from mgatk_go
+	val samplename from mgatk_samplename_ch
 	val barcode from barcodes_ch
 	val atac_bam from atac_bam_ch
 
@@ -445,9 +442,7 @@ process fastqc {
 	set sid, projid, ref, lib, pair from fqc_ch
 
 	output:
-	val projid into mqc_cha
-	val projid into md5_fastqc_go
-	val projid into multiqc_go
+	val projid into mqc_ch
 
 	"""
 mkdir -p ${qcdir}
@@ -474,12 +469,13 @@ process multiqc_count_run {
 
 	input:
 	val x from run_summarize.collect()
-	val projid from multiqc_go
+	val projid from mqc_ch
 	val y from qualimap_rna_done
+	//val z from mqc_count
 	//val z from qualimap_atac_done
 
-	output:
-        val y into count_mat_ch
+	//output:
+        //val y into count_mat_ch
 
 	"""
 
