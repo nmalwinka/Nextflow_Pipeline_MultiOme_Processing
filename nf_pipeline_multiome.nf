@@ -313,14 +313,10 @@ process gen_aggCSV {
 
 	when:
 	lib == 'rna'
-	run_aggregate="y"
 
 	"""
 
-
-aggcsv=${aggdir}/${projid}_libraries.csv
-echo \$aggcsv
-echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,${aggdir}/${sid}.per_barcode_metrics.csv,${aggdir}/${sid}.gex_molecule_info.h5" >> \$aggcsv
+echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,${aggdir}/${sid}.per_barcode_metrics.csv,${aggdir}/${sid}.gex_molecule_info.h5" >> ${aggdir}/${projid}_libraries.csv
 
 	"""
 }
