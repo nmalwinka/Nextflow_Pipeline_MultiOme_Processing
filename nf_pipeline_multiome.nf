@@ -334,7 +334,7 @@ process aggregate {
 	val moleculeinfo from count_agg.collect()
 
 	when:
-	run_aggregate="y"
+	run_aggregate == 'y'
 
 	"""
 if [ $ref == "Human" ] || [ $ref == "human" ]
@@ -390,7 +390,7 @@ process mgatk {
 	val atac_bam from atac_bam_ch
 
 	when:
-	mgatk_run="y"
+	mgatk_run = 'y'
 
 	"""
 source activate mgatk
