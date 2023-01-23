@@ -96,10 +96,10 @@ echo '${fqdir}/rna,$sid,Gene Expression' >> \$libcsv
 atacid=\$(grep ',atac,$pair' $sheet | cut -f2 -d ',')
 echo "${fqdir}/atac,$sid,Chromatin Accessibility" >> \$libcsv
 
+
 mkdir -p ${aggdir}
-aggcsv=${aggdir}/${projid}_libraries.csv
-echo \$aggcsv
-echo "library_id,atac_fragments,per_barcode_metrics,gex_molecule_info" > \$aggcsv
+echo "library_id,atac_fragments,per_barcode_metrics,gex_molecule_info" > ${aggdir}/${projid}_libraries.csv
+
 
   	"""
 
@@ -326,12 +326,15 @@ echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,${aggdir}/${sid}.per_barcode
 
 process aggregate {
 
-	publishDir "${outdir}/aggregate/", mode: 'move', overwrite: true
+	publishDir "${outdir}/aggregate/", mode: 'copy', overwrite: true
 	tag "$projid"
 
 	input:
 	set projid, ref from craggregate.unique()
 	val moleculeinfo from count_agg.collect()
+
+  output:
+  path '*'
 
 	when:
 	run_aggregate == 'y'
