@@ -96,11 +96,6 @@ echo '${fqdir}/rna,$sid,Gene Expression' >> \$libcsv
 atacid=\$(grep ',atac,$pair' $sheet | cut -f2 -d ',')
 echo "${fqdir}/atac,$sid,Chromatin Accessibility" >> \$libcsv
 
-
-mkdir -p ${aggdir}
-echo "library_id,atac_fragments,per_barcode_metrics,gex_molecule_info" > ${aggdir}/${projid}_libraries.csv
-
-
   	"""
 
 }
@@ -298,8 +293,6 @@ qualimap bamqc -gff \$GTF -bam $ATAC_BAM -outdir ${qcdir}/qualimap --java-mem-si
 
 
 
-
-
 // aggregation
 process gen_aggCSV {
 
@@ -316,7 +309,23 @@ process gen_aggCSV {
 
 	"""
 
-echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,${aggdir}/${sid}.per_barcode_metrics.csv,${aggdir}/${sid}.gex_molecule_info.h5" >> ${aggdir}/${projid}_libraries.csv
+mkdir -p ${aggdir}
+aggcsv=${aggdir}/${projid}_libraries.csv
+if [ -f \${aggcsv} ]
+then
+	if grep -q $sid \$aggcsv
+	then
+		echo ""
+	else
+		echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,${aggdir}/${sid}.per_barcode_metrics.csv,${aggdir}/${sid}.gex_molecule_info.h5" >> \$aggcsv
+	fi
+else
+  echo "library_id,atac_fragments,per_barcode_metrics,gex_molecule_info" > \$aggcsv
+  echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,\
+  ${aggdir}/${sid}.per_barcode_metrics.csv,\
+  ${aggdir}/${sid}.gex_molecule_info.h5" >> \$aggcsv
+
+fi
 
 	"""
 }
