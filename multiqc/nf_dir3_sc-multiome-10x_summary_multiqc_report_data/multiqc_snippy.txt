@@ -1,0 +1,4 @@
+Sample	Variant-COMPLEX	Variant-DEL	Variant-INS	Variant-SNP	VariantTotal
+multiqc	0	0	0	0	0
+multiqc_general_stats	0	0	0	0	0
+multiqc_sources	0	0	0	0	0

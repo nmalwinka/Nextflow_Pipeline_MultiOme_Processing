@@ -491,9 +491,14 @@ process multiqc_count_run {
 
 	"""
 
-#module load multiqc
 mkdir -p ${qcdir}/multiqc
-~/.conda/envs/env_nf/bin/multiqc -f --outdir ${qcdir}/multiqc -n ${metaid}_sc-multiome-10x_summary_multiqc_report.html -c ${outdir}/multiqc_config.yaml ${outdir}
+
+~/.conda/envs/env_nf/bin/multiqc -f --outdir ${qcdir}/multiqc \
+        -n ${metaid}_sc-multiome-10x_summary_multiqc_report.html \
+        -c ${outdir}/multiqc_config.yaml \
+        ${qcdir} \
+        ${countdir} \
+        ${fqdir}
 
 echo "multiqc done"
 

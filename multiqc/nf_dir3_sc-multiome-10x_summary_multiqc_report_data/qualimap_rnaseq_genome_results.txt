@@ -1,0 +1,2 @@
+Sample	bam_file	reads_aligned	total_alignments	non_unique_alignments	reads_aligned_genes	ambiguous_alignments	not_aligned	5_3_bias	reads_aligned_exonic	reads_aligned_intronic	reads_aligned_intergenic	reads_aligned_overlapping_exon
+gex_possorted_bam	/suffolk/WorkGenomicsH/mn367/Projects/MBU_Jelle/MBU_jv361_001/nf_dir3/work/8f/ca713dececf226d8582e6b17e6514f/Sample1/outs/gex_possorted_bam.bam	446985467.0	446985467.0	63988925.0	215028692.0	16538758.0	28943823.0	1.01	215028692.0	85677527.0	65742939.0	12831968.0

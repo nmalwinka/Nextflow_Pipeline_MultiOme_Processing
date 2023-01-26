@@ -16,11 +16,13 @@ intro_text: "Pipeline created by Malwina Prater, MBU Bioinformatics"
 
 fn_ignore_files:
     - '*lostreads*'
+fn_ignore_dirs:
+    - 'work'
+    - 'SC_ATAC_GEX_COUNTER_CS'
+fn_ignore_paths:
+    - 'count/*/*outs/SC_ATAC_GEX_COUNTER_CS/*'
+
 
 custom_logo: '/suffolk/WorkGenomicsE/mn367/Logo/LOGO_MRC_MBU_Cambridge_RGB.png'
 custom_logo_url: 'http://www.mrc-mbu.cam.ac.uk/'
 custom_logo_title: 'MRC Mitochondrial Biology Unit, University of Cambridge'
-
-
-
-
