@@ -33,10 +33,10 @@ with formatting like:
 
 ````
 Sample_ID,index,Sample_Project,Sample_Species,Sample_Lib,Sample_Pair
-Sample1,SINAD11,MBU_jv361_001,mouse,rna,1
-Sample1,SITTH3,MBU_jv361_001,mouse,atac,1
-Sample2,SINAD11,MBU_jv361_001,mouse,rna,2
-Sample2,SITTH3,MBU_jv361_001,mouse,atac,2
+Sample2,ProjID,mouse,rna,1
+Sample2,ProjID,mouse,atac,1
+Sample1,ProjID,mouse,rna,1
+Sample1,ProjID,mouse,atac,1
 ````
 
 
@@ -117,6 +117,8 @@ custom_logo_title: 'MRC Mitochondrial Biology Unit, University of Cambridge'
 Run nextflow on MBU cluster:
 
 change directory to project dir, where fastq files are stored (or linked).
+
+Before running the pipeline, change software paths, e.g. MultiQC, FastQ-screen, qualimap, CellRanger-arc, mgatk etc.
 
 ````
 

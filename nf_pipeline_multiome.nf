@@ -58,7 +58,7 @@ Channel
     .splitCsv(header:true)
     .map { row -> tuple( row.Sample_ID, row.Sample_Project, row.Sample_Species, row.Sample_Lib, row.Sample_Pair ) }
     .tap{infoall}
-    .into { crlib_ch; cragg_ch; fqc_ch; qualimap_rna_ch }
+    .into { crlib_ch; cragg_ch; fqc_ch; fqs_ch; qualimap_rna_ch }
 
 println " > Samples to process: "
 println "[Sample_ID,Sample_Project,Sample_Species,Sample_Lib,pair]"
@@ -78,6 +78,7 @@ process gen_libraries_csv {
  	output:
 	set sid, projid, ref, lib, pair into count_lib_csv
 	val sheet into count_ready
+  val sheet into count_ready2
 
 	when:
 	lib == 'rna'
@@ -447,6 +448,36 @@ done
 
 
 
+process fastq_screen {
+
+	tag "${sid}-${projid}"
+
+	input:
+	val run_count from count_ready
+	set sid, projid, ref, lib, pair from fqs_ch
+
+	output:
+	val projid into mqc2_ch
+
+	"""
+mkdir -p ${qcdir}
+mkdir -p ${qcdir}/fastq_screen
+mkdir -p ${qcdir}/fastq_screen/atac
+mkdir -p ${qcdir}/fastq_screen/rna
+
+for file in ${fqdir}/${lib}/${sid}*fastq.gz
+        do
+        echo \$file
+        /suffolk/WorkGenomicsE/mn367/tools/FastQ-Screen-0.14.1/fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib \$file
+done
+
+	"""
+}
+
+
+
+
+
 
 process multiqc_count_run {
 
@@ -455,6 +486,7 @@ process multiqc_count_run {
 	input:
 	val x from run_summarize.collect()
 	val projid from mqc_ch
+  val projid2 from mqc2_ch
 	val y from qualimap_rna_done
 
 	"""
