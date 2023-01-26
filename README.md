@@ -33,8 +33,8 @@ with formatting like:
 
 ````
 Sample_ID,Sample_Project,Sample_Species,Sample_Lib,Sample_Pair
-Sample2,ProjID,mouse,rna,1
-Sample2,ProjID,mouse,atac,1
+Sample2,ProjID,mouse,rna,2
+Sample2,ProjID,mouse,atac,2
 Sample1,ProjID,mouse,rna,1
 Sample1,ProjID,mouse,atac,1
 ````
