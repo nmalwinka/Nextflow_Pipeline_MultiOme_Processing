@@ -32,7 +32,7 @@ Nextflow pipeline for processing 10x MultiOme datasets with CellRanger-arc and m
 with formatting like:
 
 ````
-Sample_ID,index,Sample_Project,Sample_Species,Sample_Lib,Sample_Pair
+Sample_ID,Sample_Project,Sample_Species,Sample_Lib,Sample_Pair
 Sample2,ProjID,mouse,rna,1
 Sample2,ProjID,mouse,atac,1
 Sample1,ProjID,mouse,rna,1
