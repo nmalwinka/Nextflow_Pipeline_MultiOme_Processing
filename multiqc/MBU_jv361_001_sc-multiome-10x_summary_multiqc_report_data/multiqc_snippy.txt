@@ -1,0 +1,2 @@
+Sample	Variant-COMPLEX	Variant-DEL	Variant-INS	Variant-SNP	VariantTotal
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir2 | qc | multiqc | MBU_jv361_001_sc-multiome-10x_summary_multiqc_report_data | multiqc.log	0	0	0	0	0

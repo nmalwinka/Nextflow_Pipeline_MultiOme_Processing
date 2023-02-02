@@ -1,22 +1,14 @@
-Sample	FastQC_mqc-generalstats-fastqc-percent_duplicates	FastQC_mqc-generalstats-fastqc-percent_gc	FastQC_mqc-generalstats-fastqc-avg_sequence_length	FastQC_mqc-generalstats-fastqc-percent_fails	FastQC_mqc-generalstats-fastqc-total_sequences	Picard_mqc-generalstats-picard-PERCENT_DUPLICATION	QualiMap_mqc-generalstats-qualimap-5_3_bias	QualiMap_mqc-generalstats-qualimap-reads_aligned	Snippy_mqc-generalstats-snippy-VariantTotal
-Sample1_S1_L001_I1_001	99.99999906776235	50.0	8.0	27.27272727272727	429075141.0				
-Sample1_S1_L001_I2_001	99.9999949572341	60.0	10.0	36.36363636363637	475929290.0				
-Sample1_S1_L001_R1_001	67.67391218894093	50.0	50.0	18.181818181818183	429075141.0				
-Sample1_S1_L001_R2_001	98.33940430285081	47.0	16.0	9.090909090909092	429075141.0				
-Sample1_S1_L001_R3_001	65.60845147691421	50.0	50.0	18.181818181818183	429075141.0				
-barcodes.1.temp1						0.393905			
-barcodes.10.temp1						0.392991			
-barcodes.11.temp1						0.393327			
-barcodes.12.temp1						0.393356			
-barcodes.2.temp1						0.390867			
-barcodes.3.temp1						0.390169			
-barcodes.4.temp1						0.389452			
-barcodes.5.temp1						0.390572			
-barcodes.6.temp1						0.393967			
-barcodes.7.temp1						0.391881			
-barcodes.8.temp1						0.394926			
-barcodes.9.temp1						0.397534			
-gex_possorted_bam							1.01	446985467.0	
-multiqc									0
-multiqc_general_stats									0
-multiqc_sources									0
+Sample	FastQC_mqc-generalstats-fastqc-percent_duplicates	FastQC_mqc-generalstats-fastqc-percent_gc	FastQC_mqc-generalstats-fastqc-avg_sequence_length	FastQC_mqc-generalstats-fastqc-percent_fails	FastQC_mqc-generalstats-fastqc-total_sequences	Snippy_mqc-generalstats-snippy-VariantTotal	QualiMap_mqc-generalstats-qualimap-5_3_bias	QualiMap_mqc-generalstats-qualimap-reads_aligned
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastqc | atac | Sample1_S1_L001_I1_001	99.99999906776235	50.0	8.0	27.27272727272727	429075141.0			
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastqc | atac | Sample1_S1_L001_R1_001	67.67391218894093	50.0	50.0	18.181818181818183	429075141.0			
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastqc | atac | Sample1_S1_L001_R2_001	98.33940430285081	47.0	16.0	9.090909090909092	429075141.0			
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastqc | atac | Sample1_S1_L001_R3_001	65.60845147691421	50.0	50.0	18.181818181818183	429075141.0			
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastqc | rna | Sample1_S1_L001_I1_001	99.99999579769508	69.0	10.0	36.36363636363637	475929290.0			
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastqc | rna | Sample1_S1_L001_I2_001	99.9999949572341	60.0	10.0	36.36363636363637	475929290.0			
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastqc | rna | Sample1_S1_L001_R1_001	36.837536456201626	45.0	28.0	0.0	475929290.0			
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastqc | rna | Sample1_S1_L001_R2_001	75.89326441827517	47.0	90.0	9.090909090909092	475929290.0			
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | multiqc | nf_dir3_sc-multiome-10x_summary_multiqc_report_data | multiqc.log						0		
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | multiqc | nf_dir3_sc-multiome-10x_summary_multiqc_report_data | multiqc_data						0		
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | multiqc | nf_dir3_sc-multiome-10x_summary_multiqc_report_data | multiqc_general_stats.txt						0		
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | multiqc | nf_dir3_sc-multiome-10x_summary_multiqc_report_data | multiqc_sources.txt						0		
+suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | qualimap | qualimap_Sample1 | gex_possorted_bam.bam							1.01	446985467.0

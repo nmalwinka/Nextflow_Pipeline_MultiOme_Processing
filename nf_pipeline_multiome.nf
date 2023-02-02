@@ -45,7 +45,7 @@ println "> qc                   : $qcdir "
 println "> count                : $countdir "
 println "> aggregated           : $aggdir "
 println "> metadata             : $metadir "
-println "> mgatk		: $mgatkdir "
+println "> mgatk		            : $mgatkdir "
 println ""
 println "============================="
 
@@ -58,7 +58,7 @@ Channel
     .splitCsv(header:true)
     .map { row -> tuple( row.Sample_ID, row.Sample_Project, row.Sample_Species, row.Sample_Lib, row.Sample_Pair ) }
     .tap{infoall}
-    .into { crlib_ch; cragg_ch; fqc_ch; fqs_ch; qualimap_rna_ch }
+    .into { crlib_ch; cragg_ch; fqc_ch; fqs_ch }
 
 println " > Samples to process: "
 println "[Sample_ID,Sample_Project,Sample_Species,Sample_Lib,pair]"
@@ -77,8 +77,6 @@ process gen_libraries_csv {
 
  	output:
 	set sid, projid, ref, lib, pair into count_lib_csv
-	val sheet into count_ready
-  val sheet into count_ready2
 
 	when:
 	lib == 'rna'
@@ -120,9 +118,9 @@ process count {
 	val "${qcdir}/cellranger/${sid}.summary.csv" into count_metrics
 	val "${aggdir}/${sid}.molecule_info.h5" into count_agg
 	val sid into mgatk_samplename_ch
-        file "${sid}/outs/gex_possorted_bam.bam" into qualimap_rna_go
-        //file "${sid}/outs/atac_possorted_bam.bam" into qualimap_atac_go
 	file "${sid}/outs/atac_possorted_bam.bam" into atac_bam_ch
+  path "${sid}/outs/gex_possorted_bam.bam" into rna_bam_path_ch
+  set sid, projid, ref, lib, pair into qualimap_rna_ch
 
 	when:
 	lib == 'rna'
@@ -188,29 +186,14 @@ mkdir -p ${outdir}/summaries/web-summaries
 cp ${sid}/outs/web_summary.html ${outdir}/summaries/web-summaries/${sid}.web_summary.html
 
 gunzip -c ${sid}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz > ${sid}/outs/filtered_feature_bc_matrix/barcodes.tsv
-	"""
-
-}
 
 
-
-
-process summarize_count {
-
-	tag "${projid}"
-
-	input:
-	val metrics from count_metrics.collect()
-
-	output:
-	val "x" into run_summarize
-
-	"""
-cd $outdir
 mkdir -p ${qcdir}
 mkdir -p ${qcdir}/cellranger
 	"""
+
 }
+
 
 
 
@@ -219,12 +202,14 @@ process qualimap_rna_run {
 	tag "${sid}-${projid}"
 
 	input:
-        val RNA_BAM from qualimap_rna_go
+        path RNA_BAM from rna_bam_path_ch
         set sid, projid, ref, lib, pair from qualimap_rna_ch
 
 	output:
-	val "y" into qualimap_rna_done
+        val projid into qualimap_rna_done
 
+  when:
+        lib == 'rna'
 
 	"""
 if [ $ref == "Human" ] || [ $ref == "human" ]
@@ -244,53 +229,18 @@ fi
 
 mkdir -p  ${qcdir}/qualimap
 
-/usr/mbu/software/qualimap/qualimap-2.2.1/qualimap rnaseq -gtf \$GTF -bam $RNA_BAM -s -outdir ${qcdir}/qualimap --java-mem-size=50G
+/usr/mbu/software/qualimap/qualimap-2.2.1/qualimap rnaseq -gtf \$GTF -bam $RNA_BAM -s -outdir ${qcdir}/qualimap/rna/${sid} --java-mem-size=50G
+
+scp ${qcdir}/qualimap/rna/${sid}/rnaseq_qc_results.txt  ${qcdir}/qualimap/rna/${sid}_rnaseq_qc_results.txt
+scp -r ${qcdir}/qualimap/rna/${sid}/raw_data_qualimapReport  ${qcdir}/qualimap/rna/${sid}_raw_data_qualimapReport
+scp ${qcdir}/qualimap/rna/${sid}/qualimapReport.html  ${qcdir}/qualimap/rna/${sid}_qualimapReport.html
+scp -r ${qcdir}/qualimap/rna/${sid}/css ${qcdir}/qualimap/rna/${sid}_css
+scp -r ${qcdir}/qualimap/rna/${sid}/images_qualimapReport ${qcdir}/qualimap/rna/${sid}_images_qualimapReport
+
+
 
 	"""
 }
-
-
-
-
-/*
-process qualimap_atac_run {
-
-        tag "${sid}-${projid}"
-
-        input:
-        val ATAC_BAM from qualimap_atac_go
-        set sid, projid, ref, lib, pair from qualimap_atac_ch
-
-        output:
-        val "y" into qualimap_atac_done
-
-
-        """
-if [ $ref == "Human" ] || [ $ref == "human" ]
-then
-        GTF="/suffolk/WorkGenomicsE/mn367/Genomes/CellRanger_Genomes/refdata-cellranger-arc-GRCh38-2020-A-2.0.0/genes/genes.gtf"
-elif [ $ref == "mouse" ] || [ $ref == "Mouse" ]
-then
-        GTF="/suffolk/WorkGenomicsE/mn367/Genomes/CellRanger_Genomes/refdata-cellranger-arc-mm10-2020-A-2.0.0/genes/genes.gtf"
-elif [ $ref == "custom"  ] || [ $ref == "Custom" ]
-then
-        GTF=${params.custom_genome}/genes/genes.gtf.gz
-else
-        echo ">SPECIES NOT RECOGNIZED!"
-        genome="ERR"
-fi
-
-
-
-mkdir -p  ${qcdir}/qualimap
-module --ignore-cache load qualimap
-
-qualimap bamqc -gff \$GTF -bam $ATAC_BAM -outdir ${qcdir}/qualimap --java-mem-size=50G
-
-        """
-}
-
-*/
 
 
 
@@ -345,6 +295,7 @@ process aggregate {
 
   output:
   path '*'
+  file '*/web_summary.html' into cr_web_summ_mqc
 
 	when:
 	run_aggregate == 'y'
@@ -424,7 +375,6 @@ process fastqc {
 	tag "${sid}-${projid}"
 
 	input:
-	val run_count from count_ready
 	set sid, projid, ref, lib, pair from fqc_ch
 
 	output:
@@ -433,14 +383,18 @@ process fastqc {
 	"""
 mkdir -p ${qcdir}
 mkdir -p ${qcdir}/fastqc
-mkdir -p ${qcdir}/fastqc/atac
-mkdir -p ${qcdir}/fastqc/rna
+mkdir -p ${qcdir}/fastqc/${lib}
 
-for file in ${fqdir}/${lib}/${sid}*fastq.gz
-        do
-        echo \$file
-        fastqc -t ${task.cpus} \$file --outdir=${qcdir}/fastqc/$lib
-done
+if [[ ${lib} = "rna" ]]
+then
+  fastqc  -t ${task.cpus} ${fqdir}/${lib}/${sid}*_R*fastq.gz --outdir=${qcdir}/fastqc/$lib
+elif [[ ${lib} = "atac" ]]
+then
+  fastqc  -t ${task.cpus} ${fqdir}/${lib}/${sid}*_R1*fastq.gz --outdir=${qcdir}/fastqc/$lib
+  fastqc  -t ${task.cpus} ${fqdir}/${lib}/${sid}*_R3*fastq.gz --outdir=${qcdir}/fastqc/$lib
+else
+  echo "error, library not set"
+fi
 
 	"""
 }
@@ -453,7 +407,6 @@ process fastq_screen {
 	tag "${sid}-${projid}"
 
 	input:
-	val run_count from count_ready
 	set sid, projid, ref, lib, pair from fqs_ch
 
 	output:
@@ -465,11 +418,21 @@ mkdir -p ${qcdir}/fastq_screen
 mkdir -p ${qcdir}/fastq_screen/atac
 mkdir -p ${qcdir}/fastq_screen/rna
 
-for file in ${fqdir}/${lib}/${sid}*fastq.gz
-        do
-        echo \$file
-        /suffolk/WorkGenomicsE/mn367/tools/FastQ-Screen-0.14.1/fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib \$file
-done
+
+if [[ ${lib} = "rna" ]]
+then
+  /suffolk/WorkGenomicsE/mn367/tools/FastQ-Screen-0.14.1/fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib ${fqdir}/${lib}/${sid}*_R*fastq.gz
+elif [[ ${lib} = "atac" ]]
+then
+  /suffolk/WorkGenomicsE/mn367/tools/FastQ-Screen-0.14.1/fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib ${fqdir}/${lib}/${sid}*_R1_*fastq.gz
+  /suffolk/WorkGenomicsE/mn367/tools/FastQ-Screen-0.14.1/fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib ${fqdir}/${lib}/${sid}*_R3_*fastq.gz
+else
+  echo "error, library not set"
+fi
+
+rm -rf ${outdir}/qc/fastq_screen/*/*temp_subset.fastq || true
+
+#[ -f ${outdir}/qc/fastq_screen/*/*temp_subset.fastq ] && rm  ${outdir}/qc/fastq_screen/*/*temp_subset.fastq
 
 	"""
 }
@@ -484,21 +447,77 @@ process multiqc_count_run {
 	tag "${metaid}"
 
 	input:
-	val x from run_summarize.collect()
 	val projid from mqc_ch
   val projid2 from mqc2_ch
-	val y from qualimap_rna_done
+  val projid3 from qualimap_rna_done.unique()
+  file ('*') from cr_web_summ_mqc.collect().ifEmpty([])
+  val metrics from count_metrics.collect()
 
 	"""
 
 mkdir -p ${qcdir}/multiqc
 
-~/.conda/envs/env_nf/bin/multiqc -f --outdir ${qcdir}/multiqc \
-        -n ${metaid}_sc-multiome-10x_summary_multiqc_report.html \
-        -c ${outdir}/multiqc_config.yaml \
-        ${qcdir} \
-        ${countdir} \
-        ${fqdir}
+
+#[ -f ${outdir}/qc/multiqc_config.yaml ] && rm ${outdir}/qc/multiqc_config.yaml
+rm -rf ${outdir}/qc/multiqc_config.yaml || true
+
+touch ${outdir}/qc/multiqc_config.yaml
+echo "report_header_info:" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - Pipeline:: 'Malwina Prater'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - Analysis by:: 'Malwina Prater'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - Contact E-mail:: 'mn367@mrc-mbu.cam.ac.uk'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - Application Type:: 'scRNA-seq + scATAC-seq'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - Project Type:: '10x multiOme'" >> ${outdir}/qc/multiqc_config.yaml
+echo "" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - Sequencing Platform:: 'Illumina'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - Sequencing Setup:: 'standard'" >> ${outdir}/qc/multiqc_config.yaml
+echo "" >> ${outdir}/qc/multiqc_config.yaml
+echo "title: 'Project ID ::: $projid'" >> ${outdir}/qc/multiqc_config.yaml
+echo "subtitle: 'Mitochondrial biology Unit, MRC, University of Cambridge'" >> ${outdir}/qc/multiqc_config.yaml
+echo "intro_text: 'Pipeline created by Malwina Prater, MBU Bioinformatics'" >> ${outdir}/qc/multiqc_config.yaml
+echo "" >> ${outdir}/qc/multiqc_config.yaml
+echo "fn_ignore_files:" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - '*lostreads*'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - '*I1*'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - '*I2*'" >> ${outdir}/qc/multiqc_config.yaml
+echo "fn_ignore_dirs:" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - 'work'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - 'SC_ATAC_GEX_COUNTER_CS'" >> ${outdir}/qc/multiqc_config.yaml
+echo "fn_ignore_paths:" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - '*/outs/SC_ATAC_GEX_COUNTER_CS/*'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - 'qc/atac/*R2*'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - '*/qc/atac/*R2*'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - '*/atac/*R2*'" >> ${outdir}/qc/multiqc_config.yaml
+echo "" >> ${outdir}/qc/multiqc_config.yaml
+echo "fn_clean_exts:" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - '.gz'" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - '.fastq'" >> ${outdir}/qc/multiqc_config.yaml
+echo "extra_fn_clean_trim:" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - '${outdir}'" >> ${outdir}/qc/multiqc_config.yaml
+echo "" >> ${outdir}/qc/multiqc_config.yaml
+echo "exclude_modules:" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - snippy" >> ${outdir}/qc/multiqc_config.yaml
+echo "" >> ${outdir}/qc/multiqc_config.yaml
+echo "custom_logo: '/suffolk/WorkGenomicsE/mn367/Logo/LOGO_MRC_MBU_Cambridge_RGB.png'" >> ${outdir}/qc/multiqc_config.yaml
+echo "custom_logo_url: 'http://www.mrc-mbu.cam.ac.uk/'" >> ${outdir}/qc/multiqc_config.yaml
+echo "custom_logo_title: 'MRC Mitochondrial Biology Unit, University of Cambridge'" >> ${outdir}/qc/multiqc_config.yaml
+echo "" >> ${outdir}/qc/multiqc_config.yaml
+echo "use_filename_as_sample_name:" >> ${outdir}/qc/multiqc_config.yaml
+echo "    - qualimap" >> ${outdir}/qc/multiqc_config.yaml
+echo "" >> ${outdir}/qc/multiqc_config.yaml
+echo "top_modules:" >> ${outdir}/qc/multiqc_config.yaml
+echo "  - 'cellranger'" >> ${outdir}/qc/multiqc_config.yaml
+echo "" >> ${outdir}/qc/multiqc_config.yaml
+
+
+/usr/mbu/software/anaconda3/envs/multiqc/bin/multiqc -f --outdir ${qcdir}/multiqc \
+	 -n ${projid}_sc-multiome-10x_summary_multiqc_report.html \
+	 -c ${qcdir}/multiqc_config.yaml \
+	 -d \
+	 ${qcdir} \
+	 ${countdir} \
+	 ${fqdir} \
+	 ${outdir}/summaries/web-summaries/
 
 echo "multiqc done"
 
