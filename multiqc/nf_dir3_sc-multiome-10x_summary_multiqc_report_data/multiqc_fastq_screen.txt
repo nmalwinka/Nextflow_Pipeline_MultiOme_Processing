@@ -1,9 +1,0 @@
-Sample	total_reads	Human counts	Human percentage	Mouse counts	Mouse percentage	Ecoli counts	Ecoli percentage	PhiX counts	PhiX percentage	LambdaPhage counts	LambdaPhage percentage	No hits counts	No hits percentage
-suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastq_screen | atac | Sample1_S1_L001_I1_001_screen.txt	99994	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	99994	100.0
-suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastq_screen | atac | Sample1_S1_L001_R1_001_screen.txt	99994	6044.0	6.050000000000001	98575.0	98.58999999999999	7.0	0.01	1.0	0.0	0.0	0.0	1379	1.38
-suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastq_screen | atac | Sample1_S1_L001_R2_001_screen.txt	99994	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	99994	100.0
-suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastq_screen | atac | Sample1_S1_L001_R3_001_screen.txt	99994	6015.0	6.029999999999999	96811.0	96.82	7.0	0.01	0.0	0.0	0.0	0.0	3139	3.14
-suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastq_screen | rna | Sample1_S1_L001_I1_001_screen.txt	100006	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	100006	100.0
-suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastq_screen | rna | Sample1_S1_L001_I2_001_screen.txt	100006	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	100006	100.0
-suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastq_screen | rna | Sample1_S1_L001_R1_001_screen.txt	100006	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	100006	100.0
-suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir3 | qc | fastq_screen | rna | Sample1_S1_L001_R2_001_screen.txt	100006	40766.0	40.76	97016.0	97.01	1.0	0.0	0.0	0.0	0.0	0.0	2280	2.28

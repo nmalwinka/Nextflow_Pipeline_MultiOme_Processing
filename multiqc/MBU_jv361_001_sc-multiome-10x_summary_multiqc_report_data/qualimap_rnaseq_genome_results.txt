@@ -1,3 +1,0 @@
-Sample	bam_file	reads_aligned	total_alignments	non_unique_alignments	reads_aligned_genes	ambiguous_alignments	not_aligned	reads_aligned_exonic	reads_aligned_intronic	reads_aligned_intergenic	reads_aligned_overlapping_exon
-suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir2 | qc | qualimap | rna | Sample1 | gex_possorted_bam.bam	gex_possorted_bam.bam	9439.0	9439.0	1399.0	4516.0	370.0	561.0	4516.0	1762.0	1392.0	279.0
-suffolk | WorkGenomicsH | mn367 | Projects | MBU_Jelle | MBU_jv361_001 | nf_dir2 | qc | qualimap | rna | Sample2 | gex_possorted_bam.bam	gex_possorted_bam.bam	9439.0	9439.0	1399.0	4516.0	370.0	561.0	4516.0	1762.0	1392.0	279.0
