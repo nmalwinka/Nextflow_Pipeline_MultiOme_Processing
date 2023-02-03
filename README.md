@@ -14,9 +14,26 @@
 
 Nextflow pipeline for processing 10x MultiOme datasets with CellRanger-arc and measuring mitochondrial heteroplasmy from ATAC-seq.
 
-- Analyze 10x arc-seq (RNA + ATAC) in one pipeline.
+- Analyze 10x multiome (RNA + ATAC) in one pipeline.
 
 - Starting point are fastq files
+
+## Software requirements
+
+| Software  | Version   |
+|:-----     |:-----:    |
+|  nextflow | v.21.10.6 |  
+|  multiqc  | v.1.13    |
+|  mgatk    | v.0.6.6   |
+|  qualimap | v.2.2.1   |
+|  fastqc   | v.0.11.8  |
+|  fastq_screen | v.0.14.1 |
+|  cellranger-arc | v.2.0.1|
+
+
+To be able to run the pipeline, you can set up nextflow environment using conda (install nextflow v.21.10.6, multiqc v.1.13) and mgatk conda environment with installed mgatk v.0.6.6. Cell Ranger arc was downloaded from 10x.
+
+These need to be changed in the nextflow pipeline file.
 
 
 
