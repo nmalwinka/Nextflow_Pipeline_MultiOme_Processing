@@ -23,7 +23,7 @@ Nextflow pipeline for processing 10x MultiOme datasets with CellRanger-arc and m
 | Software  | Version   |
 |:-----     |:-----:    |
 |  nextflow | v.21.10.6 |  
-|  multiqc  | v.1.13    |
+|  multiqc  | v.1.14    |
 |  mgatk    | v.0.6.6   |
 |  qualimap | v.2.2.1   |
 |  fastqc   | v.0.11.8  |
@@ -31,7 +31,7 @@ Nextflow pipeline for processing 10x MultiOme datasets with CellRanger-arc and m
 |  cellranger-arc | v.2.0.1|
 
 
-To be able to run the pipeline, you can set up nextflow environment using conda (install nextflow v.21.10.6, multiqc v.1.13) and mgatk conda environment with installed mgatk v.0.6.6. Cell Ranger arc was downloaded from 10x.
+To be able to run the pipeline, you can set up nextflow environment using conda (install nextflow, multiqc) and mgatk conda environment with installed mgatk. Cell Ranger arc was downloaded from 10x (https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/downloads/latest).
 
 These need to be changed in the nextflow pipeline file.
 
