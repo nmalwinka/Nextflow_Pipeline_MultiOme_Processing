@@ -18,22 +18,24 @@ Nextflow pipeline for processing 10x MultiOme datasets with CellRanger-arc and m
 
 - Starting point are fastq files
 
+
 ## Software requirements
 
-| Software  | Version   |
-|:-----     |:-----:    |
-|  nextflow | v.21.10.6 |  
-|  multiqc  | v.1.14    |
-|  mgatk    | v.0.6.6   |
-|  qualimap | v.2.2.1   |
-|  fastqc   | v.0.11.8  |
-|  fastq_screen | v.0.14.1 |
-|  cellranger-arc | v.2.0.1|
+| Software        | Version   |
+|:-----           |:-----:    |
+|  nextflow       | v.21.10.6 |  
+|  multiqc        | v.1.14    |
+|  mgatk          | v.0.6.6   |
+|  qualimap       | v.2.2.1   |
+|  fastqc         | v.0.11.8  |
+|  fastq_screen   | v.0.14.1  |
+|  cellranger-arc | v.2.0.1   |
+|  bwa            | v.0.7.15  |
 
 
-To be able to run the pipeline, you can set up nextflow environment using conda (install nextflow, multiqc) and mgatk conda environment with installed mgatk. Cell Ranger arc was downloaded from 10x (https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/downloads/latest).
+Cell Ranger arc was downloaded from 10x (https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/downloads/latest).
 
-These need to be changed in the nextflow pipeline file.
+You will need to change paths to the software and genomes in the nextflow config file.
 
 
 
@@ -52,10 +54,20 @@ with formatting like:
 
 ````
 Sample_ID,Sample_Project,Sample_Species,Sample_Lib,Sample_Pair
-Sample2,ProjID,mouse,rna,2
-Sample2,ProjID,mouse,atac,2
-Sample1,ProjID,mouse,rna,1
-Sample1,ProjID,mouse,atac,1
+Sample2,ProjectID,mouse,rna,2
+Sample2,ProjectID,mouse,atac,2
+Sample1,ProjectID,mouse,rna,1
+Sample1,ProjectID,mouse,atac,1
+````
+
+For NUMTs masked genome, it has to be specified in sample table as below:
+
+````
+Sample_ID,Sample_Project,Sample_Species,Sample_Lib,Sample_Pair
+Sample2,ProjectID,mouse_NUMTs_masked,rna,2
+Sample2,ProjectID,mouse_NUMTs_masked,atac,2
+Sample1,ProjectID,mouse_NUMTs_masked,rna,1
+Sample1,ProjectID,mouse_NUMTs_masked,atac,1
 ````
 
 
@@ -84,9 +96,9 @@ fastq --|---rna ---|--Sample2_S1_L001_I1_001.fastq.gz
 This is already done for Mouse genome in directories (also unmasked genome for Human too):
 
 ````
-/path/to/CellRanger_Genomes/refdata-cellranger-arc-mm10-2020-A-2.0.0
-/path/to/CellRanger_Genomes/refdata-cellranger-arc-mm10-2020-A-2.0.0_MT_masked
-
+/suffolk/WorkGenomicsE/mn367/Genomes/CellRanger_Genomes/refdata-cellranger-arc-mm10-2020-A-2.0.0
+/suffolk/WorkGenomicsE/mn367/Genomes/CellRanger_Genomes/refdata-cellranger-arc-mm10-2020-A-2.0.0_MT_masked
+/suffolk/WorkGenomicsE/mn367/Genomes/CellRanger_Genomes/refdata-cellranger-arc-GRCh38-2020-A-2.0.0
 ````
 
 For NUMTs masking of the genome `mm10.full.backlist.bed` was downloaded from `https://github.com/caleblareau/mgatk/wiki/Increasing-coverage-from-10x-processing`.
@@ -109,15 +121,14 @@ Before running the pipeline, change software paths, e.g. MultiQC, FastQ-screen, 
 
 ````
 
-module load anaconda
-source activate env_nf
-module load qualimap
+module load nextflow/22
 
 screen -S <session_name>
 
-NXF_VER=21.10.6 nextflow run nf_pipeline_multiome.nf -config nextflow.config -resume
+nextflow run nf_pipeline_multiome.nf -config nextflow.config -resume
 
 ````
+
 
 
 

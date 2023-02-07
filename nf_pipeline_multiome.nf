@@ -1,9 +1,6 @@
 #!/usr/bin/env nextFlow
 
-
 // Base params
-runfolder_rna = params.runfolder_rna
-runfolder_atac = params.runfolder_atac
 basedir = params.basedir
 metaid = params.metaid
 
@@ -16,7 +13,6 @@ aggdir = params.aggdir
 metadir = params.metadir
 mgatkdir = params.mgatkdir
 
-
 // Read and process sample sheet
 sheet = file(params.sheet)
 
@@ -24,6 +20,15 @@ count_matrix=params.count_matrix
 mgatk_run=params.mgatk_run
 run_aggregate=params.run_aggregate
 
+
+// software params
+cellranger_arc=params.tool_cellranger_arc
+qualimap=params.tool_qualimap
+fastq_screen=params.tool_fastq_screen
+fastqc=params.tool_fastqc
+bwa=params.tool_bwa
+mgatk=params.tool_mgatk
+multiqc=params.tool_multiqc
 
 
 println "============================="
@@ -33,8 +38,6 @@ println "> INPUT: "
 println ""
 println "> run-meta-id		: $metaid "
 println "> basedir		: $basedir "
-println "> runfolder rna	: $runfolder_rna "
-println "> runfolder atac	: $runfolder_atac "
 println "> sample-sheet		: $sheet "
 println ""
 println ""
@@ -51,7 +54,6 @@ println "============================="
 
 
 
-
 // extract RNA samplesheet info
 Channel
     .fromPath(sheet)
@@ -62,7 +64,6 @@ Channel
 
 println " > Samples to process: "
 println "[Sample_ID,Sample_Project,Sample_Species,Sample_Lib,pair]"
-
 
 
 
@@ -94,13 +95,8 @@ echo '${fqdir}/rna,$sid,Gene Expression' >> \$libcsv
 # Get paired ATAC sample
 atacid=\$(grep ',atac,$pair' $sheet | cut -f2 -d ',')
 echo "${fqdir}/atac,$sid,Chromatin Accessibility" >> \$libcsv
-
   	"""
-
 }
-
-
-
 
 
 // count RNA + ATAC
@@ -119,8 +115,8 @@ process count {
 	val "${aggdir}/${sid}.molecule_info.h5" into count_agg
 	val sid into mgatk_samplename_ch
 	file "${sid}/outs/atac_possorted_bam.bam" into atac_bam_ch
-  path "${sid}/outs/gex_possorted_bam.bam" into rna_bam_path_ch
-  set sid, projid, ref, lib, pair into qualimap_rna_ch
+ 	path "${sid}/outs/gex_possorted_bam.bam" into rna_bam_path_ch
+  	set sid, projid, ref, lib, pair into qualimap_rna_ch
 
 	when:
 	lib == 'rna'
@@ -148,7 +144,8 @@ mkdir -p ${countdir}
 echo $countdir
 
 libcsv=$metadir/${projid}_${sid}_libraries.csv
-/suffolk/WorkGenomicsE/mn367/tools/cellranger-arc-2.0.1/cellranger-arc count \\
+
+$cellranger_arc count \\
 	--id=$sid \\
 	--libraries=\$libcsv \\
 	--reference=\$genome \\
@@ -187,13 +184,10 @@ cp ${sid}/outs/web_summary.html ${outdir}/summaries/web-summaries/${sid}.web_sum
 
 gunzip -c ${sid}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz > ${sid}/outs/filtered_feature_bc_matrix/barcodes.tsv
 
-
 mkdir -p ${qcdir}
 mkdir -p ${qcdir}/cellranger
 	"""
-
 }
-
 
 
 
@@ -208,7 +202,7 @@ process qualimap_rna_run {
 	output:
         val projid into qualimap_rna_done
 
-  when:
+  	when:
         lib == 'rna'
 
 	"""
@@ -218,6 +212,9 @@ then
 elif [ $ref == "mouse" ] || [ $ref == "Mouse" ]
 then
         GTF="/suffolk/WorkGenomicsE/mn367/Genomes/CellRanger_Genomes/refdata-cellranger-arc-mm10-2020-A-2.0.0/genes/genes.gtf"
+elif [ $ref == "mouse_NUMTs_masked" ] || [ $ref == "Mouse_NUMTs_masked" ]
+then
+        GTF="/suffolk/WorkGenomicsE/mn367/Genomes/CellRanger_Genomes/refdata-cellranger-arc-mm10-2020-A-2.0.0_MT_masked/GRCm38_NUMTs_MT_5024_13715_masked_CR_arc/genes/genes.gtf"
 elif [ $ref == "custom"  ] || [ $ref == "Custom" ]
 then
         GTF=${params.custom_genome}/genes/genes.gtf.gz
@@ -229,16 +226,13 @@ fi
 
 mkdir -p  ${qcdir}/qualimap
 
-/usr/mbu/software/qualimap/qualimap-2.2.1/qualimap rnaseq -gtf \$GTF -bam $RNA_BAM -s -outdir ${qcdir}/qualimap/rna/${sid} --java-mem-size=50G
+$qualimap rnaseq -gtf \$GTF -bam $RNA_BAM -s -outdir ${qcdir}/qualimap/rna/${sid} --java-mem-size=50G
 
 scp ${qcdir}/qualimap/rna/${sid}/rnaseq_qc_results.txt  ${qcdir}/qualimap/rna/${sid}_rnaseq_qc_results.txt
 scp -r ${qcdir}/qualimap/rna/${sid}/raw_data_qualimapReport  ${qcdir}/qualimap/rna/${sid}_raw_data_qualimapReport
 scp ${qcdir}/qualimap/rna/${sid}/qualimapReport.html  ${qcdir}/qualimap/rna/${sid}_qualimapReport.html
 scp -r ${qcdir}/qualimap/rna/${sid}/css ${qcdir}/qualimap/rna/${sid}_css
 scp -r ${qcdir}/qualimap/rna/${sid}/images_qualimapReport ${qcdir}/qualimap/rna/${sid}_images_qualimapReport
-
-
-
 	"""
 }
 
@@ -271,13 +265,12 @@ then
 		echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,${aggdir}/${sid}.per_barcode_metrics.csv,${aggdir}/${sid}.gex_molecule_info.h5" >> \$aggcsv
 	fi
 else
-  echo "library_id,atac_fragments,per_barcode_metrics,gex_molecule_info" > \$aggcsv
-  echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,\
-  ${aggdir}/${sid}.per_barcode_metrics.csv,\
-  ${aggdir}/${sid}.gex_molecule_info.h5" >> \$aggcsv
+  	echo "library_id,atac_fragments,per_barcode_metrics,gex_molecule_info" > \$aggcsv
+  	echo "${sid},${aggdir}/${sid}.atac_fragments.tsv.gz,\
+  	${aggdir}/${sid}.per_barcode_metrics.csv,\
+  	${aggdir}/${sid}.gex_molecule_info.h5" >> \$aggcsv
 
 fi
-
 	"""
 }
 
@@ -293,9 +286,9 @@ process aggregate {
 	set projid, ref from craggregate.unique()
 	val moleculeinfo from count_agg.collect()
 
-  output:
-  path '*'
-  file '*/web_summary.html' into cr_web_summ_mqc
+  	output:
+  	path '*'
+  	file '*/web_summary.html' into cr_web_summ_mqc
 
 	when:
 	run_aggregate == 'y'
@@ -319,8 +312,7 @@ else
 fi
 
 
-
-/suffolk/WorkGenomicsE/mn367/tools/cellranger-arc-2.0.1/cellranger-arc aggr \
+$cellranger_arc aggr \
    --id=${projid}_agg \
    --csv=${aggdir}/${projid}_libraries.csv \
    --normalize=depth \
@@ -337,13 +329,7 @@ rm ${aggdir}/*barcode_metrics.csv
 ## Remove the atac_fragments.csv files that are stored in the aggregate folder (the original files are still in count-cr/../outs
 rm ${aggdir}/*atac_fragments.tsv.gz*
 	"""
-
 }
-
-
-
-
-
 
 
 process mgatk {
@@ -357,17 +343,13 @@ process mgatk {
 	mgatk_run = 'y'
 
 	"""
-source activate mgatk
 
 mkdir -p ${basedir}/mgatk
 mkdir -p ${basedir}/mgatk/${samplename}
 
-mgatk tenx  -bt CB -c 12 -ub UB  -i ${atac_bam} -o ${basedir}/mgatk/${samplename} -b ${barcode} --mito-genome mm10
-
+$mgatk tenx  -bt CB -c 12 -ub UB  -i ${atac_bam} -o ${basedir}/mgatk/${samplename} -b ${barcode} --mito-genome mm10
 	"""
 }
-
-
 
 
 process fastqc {
@@ -387,19 +369,16 @@ mkdir -p ${qcdir}/fastqc/${lib}
 
 if [[ ${lib} = "rna" ]]
 then
-  fastqc  -t ${task.cpus} ${fqdir}/${lib}/${sid}*_R*fastq.gz --outdir=${qcdir}/fastqc/$lib
+  $fastqc  -t ${task.cpus} ${fqdir}/${lib}/${sid}*_R*fastq.gz --outdir=${qcdir}/fastqc/$lib
 elif [[ ${lib} = "atac" ]]
 then
-  fastqc  -t ${task.cpus} ${fqdir}/${lib}/${sid}*_R1*fastq.gz --outdir=${qcdir}/fastqc/$lib
-  fastqc  -t ${task.cpus} ${fqdir}/${lib}/${sid}*_R3*fastq.gz --outdir=${qcdir}/fastqc/$lib
+  $fastqc  -t ${task.cpus} ${fqdir}/${lib}/${sid}*_R1*fastq.gz --outdir=${qcdir}/fastqc/$lib
+  $fastqc  -t ${task.cpus} ${fqdir}/${lib}/${sid}*_R3*fastq.gz --outdir=${qcdir}/fastqc/$lib
 else
   echo "error, library not set"
 fi
-
 	"""
 }
-
-
 
 
 process fastq_screen {
@@ -418,28 +397,20 @@ mkdir -p ${qcdir}/fastq_screen
 mkdir -p ${qcdir}/fastq_screen/atac
 mkdir -p ${qcdir}/fastq_screen/rna
 
-
 if [[ ${lib} = "rna" ]]
 then
-  /suffolk/WorkGenomicsE/mn367/tools/FastQ-Screen-0.14.1/fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib ${fqdir}/${lib}/${sid}*_R*fastq.gz
+  $fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib ${fqdir}/${lib}/${sid}*_R*fastq.gz
 elif [[ ${lib} = "atac" ]]
 then
-  /suffolk/WorkGenomicsE/mn367/tools/FastQ-Screen-0.14.1/fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib ${fqdir}/${lib}/${sid}*_R1_*fastq.gz
-  /suffolk/WorkGenomicsE/mn367/tools/FastQ-Screen-0.14.1/fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib ${fqdir}/${lib}/${sid}*_R3_*fastq.gz
+  $fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib ${fqdir}/${lib}/${sid}*_R1_*fastq.gz
+  $fastq_screen --aligner bwa --outdir=${qcdir}/fastq_screen/$lib ${fqdir}/${lib}/${sid}*_R3_*fastq.gz
 else
   echo "error, library not set"
 fi
 
-rm -rf ${outdir}/qc/fastq_screen/*/*temp_subset.fastq || true
-
-#[ -f ${outdir}/qc/fastq_screen/*/*temp_subset.fastq ] && rm  ${outdir}/qc/fastq_screen/*/*temp_subset.fastq
-
+#rm -rf ${outdir}/qc/fastq_screen/*/*temp_subset.fastq || true
 	"""
 }
-
-
-
-
 
 
 process multiqc_count_run {
@@ -448,17 +419,14 @@ process multiqc_count_run {
 
 	input:
 	val projid from mqc_ch
-  val projid2 from mqc2_ch
-  val projid3 from qualimap_rna_done.unique()
-  file ('*') from cr_web_summ_mqc.collect().ifEmpty([])
-  val metrics from count_metrics.collect()
+  	val projid2 from mqc2_ch
+  	val projid3 from qualimap_rna_done.unique()
+  	file ('*') from cr_web_summ_mqc.collect().ifEmpty([])
+  	val metrics from count_metrics.collect()
 
 	"""
-
 mkdir -p ${qcdir}/multiqc
 
-
-#[ -f ${outdir}/qc/multiqc_config.yaml ] && rm ${outdir}/qc/multiqc_config.yaml
 rm -rf ${outdir}/qc/multiqc_config.yaml || true
 
 touch ${outdir}/qc/multiqc_config.yaml
@@ -510,7 +478,7 @@ echo "  - 'cellranger'" >> ${outdir}/qc/multiqc_config.yaml
 echo "" >> ${outdir}/qc/multiqc_config.yaml
 
 
-/usr/mbu/software/anaconda3/envs/multiqc/bin/multiqc -f --outdir ${qcdir}/multiqc \
+$multiqc -f --outdir ${qcdir}/multiqc \
 	 -n ${projid}_sc-multiome-10x_summary_multiqc_report.html \
 	 -c ${qcdir}/multiqc_config.yaml \
 	 -d \
@@ -520,6 +488,5 @@ echo "" >> ${outdir}/qc/multiqc_config.yaml
 	 ${outdir}/summaries/web-summaries/
 
 echo "multiqc done"
-
 	"""
 }
