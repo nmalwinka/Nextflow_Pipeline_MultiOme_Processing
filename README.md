@@ -31,6 +31,7 @@ Nextflow pipeline for processing 10x MultiOme datasets with CellRanger-arc and m
 |  fastq_screen   | v.0.14.1  |
 |  cellranger-arc | v.2.0.1   |
 |  bwa            | v.0.7.15  |
+|  java           | min v.1.8 |
 
 
 Cell Ranger arc was downloaded from 10x (https://support.10xgenomics.com/single-cell-multiome-atac-gex/software/downloads/latest).
@@ -121,11 +122,14 @@ Before running the pipeline, change software paths, e.g. MultiQC, FastQ-screen, 
 
 ````
 
-module load nextflow/22
+#module load nextflow/22
+
+module load anaconda
+module load qualimap
 
 screen -S <session_name>
 
-nextflow run nf_pipeline_multiome.nf -config nextflow.config -resume
+NXF_VER=21.10.6 nextflow run nf_pipeline_multiome.nf -config nextflow.config -resume
 
 ````
 
